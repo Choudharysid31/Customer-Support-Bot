@@ -1,0 +1,15 @@
+Project Structure
+Customer Support Bot/
+├── .venv/
+├── templates/
+│   └── chatbot.html
+├── static/
+├── app.py
+├── intents.py
+├── train.py
+├── class.pkl
+├── model.h5
+├── word.pkl
+├── requirements.txt
+├── app.py
+├── README.md

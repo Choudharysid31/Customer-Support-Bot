@@ -101,6 +101,7 @@
         }
         .chat-footer button {
             margin-left: 10px;
+            margin-right: 10px;
             background-color: #ff7606;
             color: #fff;
             border: none;
@@ -124,82 +125,60 @@
         </div>
 
         <div class="chat-footer">
-            <input type="text" id="text" placeholder="Type your message...">
-            <button id="send"><i class="fas fa-paper-plane"></i></button>
+            <button id="speechButton" onclick="startListening()">🎤</button>
+            <input type="text" id="text" placeholder="Type your message..." >
+            <button id="send" onclick="sendMessage()"><i class="fas fa-paper-plane"></i></button>
         </div>
-    </div>
 
+</div>
 
-    <script>
-        $(document).ready(function() {
-            $('#send').on('click', function(event) {
+<script>
+        // Event listener for Enter key
+        document.getElementById('text').addEventListener('keydown', function(event) {
+            if (event.key === "Enter") {
                 event.preventDefault();
-                const messageText = $('#text').val();
-                if (messageText.trim() === '') return;
-
-                const userMessage = `<div class="msg user"><div class="bubble">${messageText}</div></div>`;
-                $('#messageArea').append(userMessage);
-                $('#text').val('');
-
-                $.ajax({
-                    type: 'POST',
-                    url: '/get',
-                    data: { msg: messageText },
-                    success: function(response) {
-                        const botMessage = `<div class="msg bot"><div class="bubble">${response}</div></div>`;
-                        $('#messageArea').append(botMessage);
-                        $('#messageArea').scrollTop($('#messageArea')[0].scrollHeight);
-                    },
-                    error: function() {
-                        const errorMessage = `<div class="msg bot"><div class="bubble">Sorry, I couldn't process that.</div></div>`;
-                        $('#messageArea').append(errorMessage);
-                        $('#messageArea').scrollTop($('#messageArea')[0].scrollHeight);
-                    }
-                });
-            });
-        });
-         $(document).ready(function() {
-        // Send message on button click
-        $('#send').on('click', function(event) {
-            event.preventDefault();
-            sendMessage();
-        });
-
-        // Send message on Enter key press
-        $('#text').on('keydown', function(event) {
-            if (event.key === 'Enter' || event.which === 13) {
-                event.preventDefault(); // Prevent newline in input field
                 sendMessage();
             }
         });
 
-        // Function to handle sending messages
-        function sendMessage() {
-            const messageText = $('#text').val();
-            if (messageText.trim() === '') return; // Avoid sending empty messages
+    function sendMessage() {
+        const messageText = $('#text').val();
+        if (messageText.trim() === '') return;
 
-            const userMessage = `<div class="msg user"><div class="bubble">${messageText}</div></div>`;
-            $('#messageArea').append(userMessage);
-            $('#text').val(''); // Clear input field
+        const userMessage = `<div class="msg user"><div class="bubble">${messageText}</div></div>`;
+        $('#messageArea').append(userMessage);
+        $('#text').val('');
 
-            // Send AJAX request to backend
-            $.ajax({
-                type: 'POST',
-                url: '/get',
-                data: { msg: messageText },
-                success: function(response) {
-                    const botMessage = `<div class="msg bot"><div class="bubble">${response}</div></div>`;
-                    $('#messageArea').append(botMessage);
-                    $('#messageArea').scrollTop($('#messageArea')[0].scrollHeight);
-                },
-                error: function() {
-                    const errorMessage = `<div class="msg bot"><div class="bubble">Sorry, I couldn't process that.</div></div>`;
-                    $('#messageArea').append(errorMessage);
-                    $('#messageArea').scrollTop($('#messageArea')[0].scrollHeight);
-                }
-            });
-        }
-    });
-    </script>
+        $.ajax({
+            type: 'POST',
+            url: '/get',
+            data: { msg: messageText },
+            success: function(response) {
+                const botMessage = `<div class="msg bot"><div class="bubble">${response}</div></div>`;
+                $('#messageArea').append(botMessage);
+                $('#messageArea').scrollTop($('#messageArea')[0].scrollHeight);
+            },
+            error: function() {
+                alert('Error processing message.');
+            }
+        });
+    }
+
+    function startListening() {
+        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+        recognition.lang = 'en-US';
+        recognition.start();
+
+        recognition.onresult = async (event) => {
+            const speechText = event.results[0][0].transcript;
+            $('#text').val(speechText);
+            sendMessage();
+        };
+
+        recognition.onerror = (event) => {
+            alert('Speech recognition error: ' + event.error);
+        };
+    }
+</script>
 </body>
 </html>

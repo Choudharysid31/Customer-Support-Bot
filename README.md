@@ -1,6 +1,6 @@
 # Customer-Support-Bot
 Developed a chatbot capable of answering frequently asked questions for a shipment tracking website.
-Steps To Run:/n
+Steps To Run:\n
 STEP1: Choose an IDE
 STEP2: Create an Virtual Environment
 STEP3: Setup the Project File
